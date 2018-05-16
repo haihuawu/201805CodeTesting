@@ -3,7 +3,6 @@ var app = angular.module('todoapp', []);
 app.controller('appCtrl', function($scope, $http) {
     const baseUrl = "http://127.0.0.1:8000/";
 
-    $scope.name = "John";
     $scope.statuses = ["complete", "pending"];
     $scope.status = "pending";
     /**
@@ -12,38 +11,27 @@ app.controller('appCtrl', function($scope, $http) {
      * GET todos(Which is corresponding to index() function inside TodoController)(AJAX CALL)
      * 2.store all data in todolist variable, then use ng-repeat to show a list(using ul li tag) in index.html
      */
-    retrieveList();
+    getList();
 
-    function request(method, url, params, callback) {
+    function getList() {
         $http({
-            method: method,
-            url: url,
-            params: params
-        }).then(response  => {
-            callback(null, response);
-        }, err => {
-            callback(err);
-        });
+            method: "GET",
+            url: baseUrl+"todos",
+            params: {}
+        }).then(response => $scope.todoList = response.data)
     }
 
-    function retrieveList() {
-        request("GET", baseUrl+"todos", {}, (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                $scope.todoList = result.data;
-            }
-        })
-    }
     /**
      * TODO:
      * 1.Each task can be delete. when user click(need to create event handler) on that task.
      * 2.Send delete request to rest API to delete it in mysql database.(AJAX CALL)
      */
     $scope.deleteTask = id => {
-        request("DELETE", baseUrl+"todos/"+id, {}, (err, result) => {
-            retrieveList();
-        })
+        $http({
+            method: "DELETE",
+            url: baseUrl+"todos/"+id,
+            params: {}
+        }).then(getList());
     };
 
     /**
@@ -61,15 +49,17 @@ app.controller('appCtrl', function($scope, $http) {
             status: $scope.status,
             task: $scope.task
         }
-        request("POST", baseUrl+"todos", params, (err, result) => {
-            retrieveList();
-        });
+        $http({
+            method: "POST",
+            url: baseUrl+"todos",
+            params: params
+        }).then(getList());
     }
 
     /**
-     * optional tasks:
-     * 1.edit todo task
-     */
+     * TODO:
+     * update status
+    */
     $scope.updateTask = id => {
         if (!$scope.status || !$scope.task) {
             return;
@@ -83,8 +73,18 @@ app.controller('appCtrl', function($scope, $http) {
             status: $scope.status,
             task: $scope.task
         }
-        request("PUT", baseUrl+"todos/"+id, params, (err, result) => {
-            retrieveList();
-        })
+
+        $http({
+            method: "PUT",
+            url: baseUrl+"todos/"+id,
+            params: params
+        }).then(getList());
     }
+
+    /**
+     * optional tasks:
+     * 1.edit todo task
+     */
+
+
 });
