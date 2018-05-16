@@ -16,12 +16,7 @@ class TodoController extends Controller
     {
         //get all todos
         $todolist = Todo::all();
-
-        return response()->json([
-            "this uri is todos, http method is GET",
-            "page is used to show a list of todos",
-            "use this function to transfer array to json data"
-        ]);
+        return response()->json($todolist);
     }
 
     /**
@@ -32,12 +27,13 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        return response()->json([
-            "this uri is todos, http method is POST",
-            "page is used to store a new todo task into database",
-            'get all todo details from the request variable like $request->task'
-        ]);
+        $todo = new Todo;
+        $todo->task = $request->task;
+        $todo->status = $request->status;
+        $todo->save();
+
+        return response()->json($todo);
+
     }
 
     /**
@@ -48,12 +44,9 @@ class TodoController extends Controller
      */
     public function destroy($id)
     {
-        //
-        return response()->json([
-            "this uri is todos/{todo}, http method is DELETE",
-            'everything inside {} means it is a parameter which will be retrieved by this function via $id variable',
-            'delete one specific todo '
-        ]);
+        $todo = Todo::find($id);
+        $todo->delete();
+        return response()->json($todo);
     }
 
     /**
@@ -67,7 +60,7 @@ class TodoController extends Controller
      */
     public function edit($id)
     {
-        //
+
         return response()->json([
             "this uri is todos/{todo}/edit, http method is GET",
             'everything inside {} means it is a parameter which will be retrieved by this function via $id variable',
@@ -84,12 +77,12 @@ class TodoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        return response()->json([
-            "this uri is todos/{todo}, http method is PUT",
-            'everything inside {} means it is a parameter which will be retrieved by this function via $id variable',
-            'get the todo task data which is edited by user and update the same record in database'
-        ]);
+        $todo = Todo::find($id);
+        $todo->task = $request->task;
+        $todo->status = $request->status;
+        $todo->save();
+
+        return response()->json($todo);
     }
 
 
@@ -97,9 +90,13 @@ class TodoController extends Controller
     {
         //
 
+
     }
 
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function create()
     {
         //

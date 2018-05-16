@@ -16,3 +16,6 @@ Route::get('/', function () {
 });
 
 Route::resource('todos', 'TodoController');
+Route::resource('todos/{id}', 'TodoController@destroy');
+Route::resource('todos/todos', 'TodoController@store');
+Route::resource('todos/{id}', 'TodoController@update');
