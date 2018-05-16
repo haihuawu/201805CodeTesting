@@ -71,7 +71,19 @@ app.controller('appCtrl', function($scope, $http) {
      * 1.edit todo task
      */
     $scope.updateTask = id => {
-        request("PUT", baseUrl+"todos/"+id, {}, (err, result) => {
+        if (!$scope.status || !$scope.task) {
+            return;
+        }
+
+        if ($scope.status == "pending") {
+            $scope.status = "complete";
+        }
+
+        const params = {
+            status: $scope.status,
+            task: $scope.task
+        }
+        request("PUT", baseUrl+"todos/"+id, params, (err, result) => {
             retrieveList();
         })
     }
